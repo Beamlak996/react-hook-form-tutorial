@@ -10,18 +10,22 @@ export const schema = z.object({
       invalid_type_error: "Age must be a valid number.",
     })
     .int({ message: "Age must be a natural number." })
-    .min(1, { message: "Age must be at least 1." }) 
+    .min(1, { message: "Age must be at least 1." })
     .max(120, { message: "Age must be less than 120." }),
   email: z
     .string()
     .min(1, { message: "Email is required." })
     .email({ message: "Please provide a valid email address." }),
+  states: z.array(z.string()).min(1, { message: "Please select atleast one state." }).max(2, { message: "You cannot select more than two states" }),
+  languagesSpoken: z.array(z.string())
 });
 
 export type Schema = z.infer<typeof schema>
 
 export const schemaDefaultValues: Schema = {
-    name: "",
-    age: 0,
-    email: ""
-}
+  name: "",
+  age: 0,
+  email: "",
+  states: [],
+  languagesSpoken: [],
+};

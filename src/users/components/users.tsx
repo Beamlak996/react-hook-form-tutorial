@@ -1,16 +1,20 @@
-import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Schema, schema, schemaDefaultValues } from "../types/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { MultiSelect } from "@/components/general/multi-select"
-import { statesOptions } from "@/lib/data"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+
+import { Schema, schema, schemaDefaultValues } from "../types/schema"
+import { useLanguages, useStates } from "../services/queries"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 
 export const Users = () => {
-    const [selectedStates, setSelectedStates] = useState<string[]>([]);
+    const stateQuery = useStates()
+    const languageQuery = useLanguages()
+
 
     const form = useForm<Schema>({
         mode: "all",
@@ -23,8 +27,11 @@ export const Users = () => {
     }
 
     return (
-      <Form {...form}  >
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-[500px]">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 max-w-[500px]"
+        >
           <div className="space-y-4">
             <FormField
               name="name"
@@ -69,13 +76,47 @@ export const Users = () => {
                 </FormItem>
               )}
             />
-            <MultiSelect
-              options={statesOptions}
-              defaultValue={[]}
-              onValueChange={setSelectedStates}
-              placeholder="Select states"
-              modalPopover={true}
-              showAllSelected={true}
+            <FormField
+              name="states"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>States</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      options={stateQuery.data || []}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      placeholder="Select options"
+                      showAllSelected={true}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="languagesSpoken"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Languages Spoken</FormLabel>
+                  <FormControl>
+                    <ToggleGroup
+                      type="multiple"
+                      onValueChange={(value) => field.onChange(value)}
+                      value={field.value}
+                      variant="default"
+                    >
+                      {languageQuery.data?.map((language) => (
+                        <ToggleGroupItem key={language.value} value={language.value}>
+                          {language.label}
+                        </ToggleGroupItem>
+                      ))}
+                    </ToggleGroup>
+                  </FormControl>
+                </FormItem>
+              )}
             />
           </div>
           <Button>Submit</Button>
