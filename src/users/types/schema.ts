@@ -16,8 +16,17 @@ export const schema = z.object({
     .string()
     .min(1, { message: "Email is required." })
     .email({ message: "Please provide a valid email address." }),
-  states: z.array(z.string()).min(1, { message: "Please select atleast one state." }).max(2, { message: "You cannot select more than two states" }),
-  languagesSpoken: z.array(z.string())
+  states: z
+    .array(z.string())
+    .min(1, { message: "Please select atleast one state." })
+    .max(2, { message: "You cannot select more than two states" }),
+  languagesSpoken: z.array(z.string()),
+  gender: z.string().min(1, {
+    message: "Gender is required.",
+  }),
+  skills: z.array(z.string()).max(2, {
+    message: "You can only select a maximum of 2 skills"
+  }),
 });
 
 export type Schema = z.infer<typeof schema>
@@ -28,4 +37,6 @@ export const schemaDefaultValues: Schema = {
   email: "",
   states: [],
   languagesSpoken: [],
+  gender: '',
+  skills: [],
 };
